@@ -28,7 +28,7 @@ const encryptUserPW = (req, res, next) => {
   // Once the user is set, call next and head back into the userController to save it to the DB
   bcrypt.hash(password, SaltRounds, (err, hash) => {
     if (err) {
-      res.status(500).json(err);
+      res.status(400).json(err);
     } 
     if (hash) {
       user = {
@@ -48,6 +48,30 @@ const compareUserPW = (req, res, next) => {
   // You'll need to find the user in your DB
   // Once you have the user, you'll need to pass the encrypted pw and the plaintext pw to the compare function
   // If the passwords match set the username on `req` ==> req.username = user.username; and call next();
+
+  User.findOne({ username })
+    .then(user => {
+      if(user) {
+        const hash = user.password;
+        bcrypt.compare(password, hash, (err, isValid) => {
+          if (err) {
+            res.status(400).json(err);
+          }
+          if (isValid) {
+            req.username = username;
+            next();
+          } else {
+            req.status(404).json({error: 'Incorrect username/password combination.'})
+          }
+        });
+        
+      } else {
+        res.status(404).json({error: 'No user with that username exist.'})
+      }
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    })
 };
 
 module.exports = {
