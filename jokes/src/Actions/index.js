@@ -4,7 +4,7 @@ export const ADDINGUSER = 'ADDINGUSER';
 export const USERADDED = 'USERADDED';
 export const ERROR = 'ERROR';
 
-const URL = 'http://localhost:3000/api'
+const URL = 'http://localhost:5000/api'
 
 
 export const addUser = (username, password, confirmPassword) => {
